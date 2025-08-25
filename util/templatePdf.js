@@ -19,6 +19,7 @@ export async function getWeeklyPdf(data){
     // create pdf/html str    
     const renderedStr = await nunjucks.render('weeklyTraffic.html', {"data":{ lat:"10", lon:"20" }});
     console.log(renderedStr)
+    return renderedStr
 }
 
 export async function htmlToPdfBuffer(htmlStr){
