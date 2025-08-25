@@ -1,8 +1,7 @@
-import transporter from "./services/nodeMailer.js"
 import dotenv from 'dotenv'
 dotenv.config()
-
-
+import {getWeeklyPdf, htmlToPdfBuffer} from './util/templatePdf.js'
+import sendEmail from './util/email.js'
 
 
 //
@@ -39,7 +38,7 @@ async function snapPointsToRoads(points){
 //
 // Collect Data
 //
-async function getCurrentTrafficData(){
+async function getCurrentTrafficData(snappedPoints){
     const baseUrl = "https://routes.googleapis.com/directions/v2:computeRoutes" 
     const response = await fetch(`${baseUrl}?key=${process.env.gapi_key}`, {
         headers: {
@@ -80,33 +79,7 @@ async function getCurrentTrafficData(){
 }
 // getCurrentTrafficData()
 
-
-//
-// Create Report
-//
-
-
-
-//
-// Email
-//
-async function sendEmail(){
-    try{
-        const mailOptions = {
-            from: process.env.SMTP_SENDER_ID,
-            to:  'vma0430@gmail.com',
-            subject: '👋 Welcome to my app!',
-            text:'Hello World!'
-        }
-        
-        await transporter.sendMail(mailOptions)
-        console.log('Email Sent!')
-    }catch(err){
-        console.error(err)
-    }    
-
-}
-//sendEmail()        
+    
 
 
 
@@ -137,7 +110,7 @@ async function main(){
     }
     
     // snap to roads
-    const snappedPoints = await snapPointsToRoads(points)
+    //const snappedPoints = await snapPointsToRoads(points)
 
     // collect current data from points
 
@@ -146,8 +119,11 @@ async function main(){
 
 
     // create a pdf
+    const htmlStr = await getWeeklyPdf()
+    const pdfBuffer = await htmlToPdfBuffer(htmlStr)
 
 
     // email to yourself
+    await sendEmail(pdfBuffer)
 }
 main()
