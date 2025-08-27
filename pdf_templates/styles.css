@@ -33,7 +33,7 @@ body {
     font-family: var(--font-family-sans);
 
     max-width: 8.5in;
-    
+    background-color: rgba(255,0,0,.5);
 }
 
 /* auto row and columns */

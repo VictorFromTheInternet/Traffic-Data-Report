@@ -17,8 +17,12 @@ export async function getWeeklyPdf(data){
 
     // calculations / averages
 
-    // create pdf/html str    
-    const renderedStr = await nunjucks.render('weeklyTraffic.html', {"data":{ lat:"10", lon:"20" }});
+    // get css data
+    const cssPath = path.join(__dirname, '..', 'pdf_templates', 'styles.css') 
+    const cssStr = await fs.readFile(cssPath, 'utf-8')
+
+    // create pdf/html str        
+    const renderedStr = await nunjucks.render('weeklyTraffic.html', {"styles": `<style>${cssStr}</style>`,"data":{ lat:"10", lon:"20" }});
     console.log(renderedStr)
     return renderedStr
 }
