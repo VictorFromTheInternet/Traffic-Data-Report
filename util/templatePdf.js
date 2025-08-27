@@ -1,5 +1,6 @@
 import puppeteer from 'puppeteer'
 import nunjucks from 'nunjucks'
+import fs from 'fs/promises'
 import path from 'path'
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -31,6 +32,16 @@ export async function htmlToPdfBuffer(htmlStr){
     await browser.close();
 
     return pdfBuffer;
+}
+
+export async function createLocalPdf(buffer, filePath){
+    try{
+        await fs.writeFile(filePath, buffer)
+        console.log('created file:', filePath)
+    }catch(err){
+        console.error(err)
+    }
+
 }
 
 export default getWeeklyPdf

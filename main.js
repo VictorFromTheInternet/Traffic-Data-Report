@@ -1,8 +1,8 @@
 import dotenv from 'dotenv'
 dotenv.config()
-import {getWeeklyPdf, htmlToPdfBuffer} from './util/templatePdf.js'
+import {getWeeklyPdf, htmlToPdfBuffer, createLocalPdf} from './util/templatePdf.js'
 import sendEmail from './util/email.js'
-
+import fs from 'fs/promises'
 
 //
 // Snap to roads (batch loop)
@@ -123,7 +123,11 @@ async function main(){
     const pdfBuffer = await htmlToPdfBuffer(htmlStr)
 
 
+    // test, create local copy    
+    createLocalPdf(pdfBuffer, './testpdfs/output.pdf')
+
+
     // email to yourself
-    await sendEmail(pdfBuffer)
+    // await sendEmail(pdfBuffer)
 }
 main()

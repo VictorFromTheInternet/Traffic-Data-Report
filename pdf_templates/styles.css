@@ -1,0 +1,203 @@
+/* css vars */
+:root {
+    --border-color-primary: rgb(25, 25, 25);
+    --border-color-secondary: rgb(150, 150, 150);
+
+    --table-header-primary: rgb(25, 25, 25);
+    --table-header-secondary: rgba(150, 150, 150, 1);
+    --table-row-light: rgba(255, 255, 255, 1);
+    --table-row-dark: rgba(200, 200, 200, 1);
+
+    --table-light-border: rgba(114, 114, 114, .75);
+    --table-dark-border: rgba(25, 25, 25, 1);
+
+    --font-family-sans: "Open Sans", sans-serif;
+    --font-family-monospace: "Courier New", Courier, monospace;
+
+    --font-size-xsm: 7pt;
+    --font-size-sm: 9pt;
+    --font-size-md: 11pt;
+    --font-size-lg: 16pt;
+}
+
+/* layout and containers */
+@page {
+    size: Letter portrait;
+    margin: .5in;
+}
+
+body {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-family-sans);
+
+    max-width: 8.5in;
+    
+}
+
+/* auto row and columns */
+.row-grid-auto {
+    display: grid;
+    grid-template-columns: repeat(autofit, min-max(50px, 1fr));
+}
+
+.col {
+    display: block;
+}
+
+/* template row and columns */
+.row-grid-template {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    width: 100%;
+}
+
+.col-span-1 {
+    grid-column: span 1;
+}
+
+.col-span-2 {
+    grid-column: span 2;
+}
+
+.col-span-3 {
+    grid-column: span 3;
+}
+
+.col-span-4 {
+    grid-column: span 4;
+}
+
+.col-span-5 {
+    grid-column: span 5;
+}
+
+.col-span-6 {
+    grid-column: span 6;
+}
+
+.col-span-7 {
+    grid-column: span 7;
+}
+
+.col-span-8 {
+    grid-column: span 8;
+}
+
+.col-span-9 {
+    grid-column: span 9;
+}
+
+.col-span-10 {
+    grid-column: span 10;
+}
+
+.col-span-11 {
+    grid-column: span 11;
+}
+
+.col-span-12 {
+    grid-column: span 12;
+}
+
+/* text styling */
+.text-container {
+    text-align: justify;
+    padding: .5rem;
+    font-family: var(--font-family-sans);
+    /* width: 100%; */
+    width: calc(100% - 1rem);
+}
+
+.text-align-center {
+    text-align: center;
+}
+
+.text-align-left {
+    text-align: left;
+}
+
+.text-align-right {
+    text-align: right;
+}
+
+.monospace {
+    font-family: var(--font-family-monospace);
+}
+
+p,
+span,
+h1,
+h2,
+h3,
+h4,
+h5 {
+    font-family: var(--font-family-sans);
+}
+
+
+/* table styling */
+.table-container {
+    padding: .5rem;
+    width: calc(100% - 1rem);
+}
+
+table {
+    page-break-inside: avoid;
+    font-family: var(--font-family-sans);
+}
+
+tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    table-layout: auto;
+
+
+    border: 1px solid var(--table-light-border);
+    font-family: var(--font-family-sans);
+
+}
+
+.table tr:nth-child(even) {
+    background-color: var(--table-row-light);
+}
+
+.table tr:nth-child(odd) {
+    background-color: var(--table-row-dark);
+}
+
+.table thead tr[class~="table-header-primary"] {
+    background-color: var(--table-header-primary);
+    color: white;
+}
+
+.table thead tr[class~="table-header-secondary"] {
+    background-color: var(--table-header-secondary);
+    color: black;
+}
+
+/* applying border to the right of all table cells (except last) */
+.table th:not(:last-child),
+.table td:not(:last-child) {
+    border-right: 1px solid var(--table-light-border);
+}
+
+/* applying border to the bottom of all table tr (except the last) */
+.table>thead>tr:not(:last-child)>th,
+.table>tbody>tr:not(:last-child)>td,
+.table>tfoot>tr:not(:last-child)>th,
+.table>tfoot>tr:not(:last-child)>td,
+.table>tr:not(:last-child)>th,
+.table>tr:not(:last-child)>td,
+.table>thead:not(:last-child),
+.table>tbody:not(:last-child),
+.table>tfoot:not(:last-child) {
+    border-bottom: 1px solid var(--table-light-border);
+}
