@@ -12,7 +12,7 @@ const __dirname = dirname(__filename);
 nunjucks.configure('./pdf_templates', { autoescape: true });
 
 
-export async function getMappedPoints(data){
+export async function getMappedPointsPdf(data){
 
     // call to db here
 

@@ -1,87 +1,11 @@
 import dotenv from 'dotenv'
 dotenv.config()
-import {getWeeklyPdf, htmlToPdfBuffer, getMappedPoints, createLocalPdf} from './util/templatePdf.js'
-import getSnappedPoints from './util/googleMap.js'
+import {getWeeklyPdf, htmlToPdfBuffer, getMappedPointsPdf, createLocalPdf} from './util/templatePdf.js'
+import {getSnappedPoints, snapPointsToRoads, getCurrentTrafficData} from './util/googleMap.js'
 import sendEmail from './util/email.js'
 import fs from 'fs/promises'
 
-//
-// Snap to roads (batch loop)
-//
-async function snapPointsToRoads(points){
 
-    const batchSize = 100; // max amount of points per google api req
-    let snappedPoints = [];
-
-    for(let i=0; i<points.length; i+=batchSize){
-        const batch = points.slice(i, i + batchSize)
-        const path = batch.map(elm => `${elm.lat},${elm.lon}`).join('|') // query param for path
-
-        try{
-            const baseUrl = `https://roads.googleapis.com/v1/snapToRoads`
-            const response = await fetch(`${baseUrl}?interpolate=true&path=${path}&key=${process.env.gapi_key}`)
-
-            const data = await response.json()
-                        
-            if(data.snappedPoints){
-                snappedPoints = [...snappedPoints, ...data.snappedPoints]
-            }            
-        }catch(err){
-            console.error(`Could not snap points to roads: ${err}`)
-        }
-    }    
-
-    return snappedPoints.slice(0,10)
-
-}
-//snapPointsToRoads(points)
-
-
-//
-// Collect Data
-//
-async function getCurrentTrafficData(snappedPoints){
-    const baseUrl = "https://routes.googleapis.com/directions/v2:computeRoutes" 
-    const response = await fetch(`${baseUrl}?key=${process.env.gapi_key}`, {
-        headers: {
-            accept: "*/*",
-            "accept-language": "en-US,en;q=0.9",
-            "content-type": "application/json",
-            "X-Goog-FieldMask":"*",
-        },
-        method: "POST",
-        body: JSON.stringify({
-                origin: {
-                    vehicleStopover: false,
-                    sideOfRoad: false,
-                    address: "Mount Pleasant, TX, USA",
-                },
-                destination: {
-                    vehicleStopover: false,
-                    sideOfRoad: false,
-                    address: "Mount Pleasant, TX, USA",
-                },
-                travelMode: "drive",
-                routingPreference: "traffic_aware",
-                polylineQuality: "high_quality",
-                computeAlternativeRoutes: true,
-                routeModifiers: {
-                    avoidTolls: false,
-                    avoidHighways: false,
-                    avoidFerries: false,
-                    avoidIndoor: false,
-                },
-            }),
-    });
-    // console.log(response)
-
-    const data = await response.json()
-    console.log(data)
-
-}
-// getCurrentTrafficData()
-
-    
 
 
 
@@ -112,9 +36,7 @@ async function main(){
     }
     
     // snap to roads
-    const snappedPoints = await snapPointsToRoads(points)
-    console.log(snappedPoints)
-    console.log(snappedPoints.length)
+    const snappedPoints = await snapPointsToRoads(points)    
 
     // get static map img
     const map = await getSnappedPoints(center, snappedPoints)
@@ -133,11 +55,11 @@ async function main(){
     //         {"val1":0}
     //     ]
     // })
-    const htmlStr = await getMappedPoints({
+    const htmlStr = await getMappedPointsPdf({
         center: center,
         bounds: bounds,        
-        map: map
-
+        map: map,
+        snappedPoints: snappedPoints
     }) 
     const pdfBuffer = await htmlToPdfBuffer(htmlStr)
 

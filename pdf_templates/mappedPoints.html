@@ -12,7 +12,7 @@
     
 </head>
 <body>    
-    <h1>Mapped Points (lat/lon)</h1>
+    <h3>Mapped Points (lat/lon)</h3>
     <p>Center: {{data.center.lat}} {{data.center.lon}}</p>
     <p>North Bound: {{data.bounds.north}}</p>
     <p>South Bound: {{data.bounds.south}} </p>
@@ -23,5 +23,22 @@
         <img src="{{ data.map }}" alt="">
     </div>
     
+    <table class="table">
+        <thead>
+            <tr>
+                <th>placeId</th>
+                <th>Lat</th>
+                <th>Lon</th>
+            </tr>
+        </thead>
+        {% for row in data.snappedPoints %}
+            <tr>
+                <td>{{ row.placeId }}</td>
+                <td>{{ row.location.latitude }}</td>
+                <td>{{ row.location.longitude }}</td>
+            </tr>
+
+        {% endfor %}
+    </table>
 </body>
 </html>
