@@ -22,15 +22,16 @@ async function snapPointsToRoads(points){
             const response = await fetch(`${baseUrl}?interpolate=true&path=${path}&key=${process.env.gapi_key}`)
 
             const data = await response.json()
-            // console.log(data)
-
-            // snappedPoints = [...snappedPoints, ...data.something.map]
+                        
+            if(data.snappedPoints){
+                snappedPoints = [...snappedPoints, ...data.snappedPoints]
+            }            
         }catch(err){
             console.error(`Could not snap points to roads: ${err}`)
         }
-    }
+    }    
 
-    return snappedPoints
+    return snappedPoints.slice(0,10)
 
 }
 //snapPointsToRoads(points)
@@ -116,7 +117,7 @@ async function main(){
     console.log(snappedPoints.length)
 
     // get static map img
-    const map = await getSnappedPoints(snappedPoints)
+    const map = await getSnappedPoints(center, snappedPoints)
 
     // collect current data from points
 

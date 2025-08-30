@@ -1,6 +1,8 @@
 
 export async function getSnappedPoints(center,snappedPoints){
     try{
+        console.log(snappedPoints)
+        console.log(typeof snappedPoints)
         const centerStr = `${center.lat},${center.lon}`
         const path = snappedPoints.map(elm => `${elm.location.latitude},${elm.location.longitude}`).join('|')
         console.log(path)
@@ -9,7 +11,7 @@ export async function getSnappedPoints(center,snappedPoints){
         return url
     }
     catch(err){
-        console.error(err)
+        console.error(`Could not create static map url: ${err}`)
     }    
 }
 
