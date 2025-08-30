@@ -22,7 +22,7 @@ export async function getWeeklyPdf(data){
     const cssStr = await fs.readFile(cssPath, 'utf-8')
 
     // create pdf/html str        
-    const renderedStr = await nunjucks.render('weeklyTraffic.html', {"styles": `<style>${cssStr}</style>`,"data":{ lat:"10", lon:"20" }});
+    const renderedStr = await nunjucks.render('weeklyTraffic.html', {"styles": `<style>${cssStr}</style>`, "data":data });
     console.log(renderedStr)
     return renderedStr
 }
@@ -32,7 +32,10 @@ export async function htmlToPdfBuffer(htmlStr){
     const page = await browser.newPage();
 
     await page.setContent(htmlStr, { waitUntil: 'networkidle0' });
-    const pdfBuffer = await page.pdf({ format: 'A4' });
+    const pdfBuffer = await page.pdf({ 
+        format: 'A4',
+        printBackground: true 
+    });
     await browser.close();
 
     return pdfBuffer;

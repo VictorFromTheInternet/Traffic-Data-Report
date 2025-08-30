@@ -11,5 +11,23 @@
 <body>    
     <h1>Hello World</h1>
     <p>Weekly Data: {{data.lat}} {{data.lon}}</p>
+
+    <table class="table">
+        <thead >
+            <tr class="table-header-secondary">
+                <th>
+                    Test
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data.table %}        
+            <tr>
+                <td>test</td>
+            </tr>
+            {% endfor %}    
+        </tbody>
+    </table>
+    
 </body>
 </html>

@@ -175,6 +175,7 @@ tr {
 
 .table thead tr[class~="table-header-primary"] {
     background-color: var(--table-header-primary);
+    /* background-color: rgba(50,50,50,1); */
     color: white;
 }
 

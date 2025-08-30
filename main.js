@@ -119,7 +119,13 @@ async function main(){
 
 
     // create a pdf
-    const htmlStr = await getWeeklyPdf()
+    const htmlStr = await getWeeklyPdf({ 
+        lat:"10", 
+        lon:"20",
+        table:[
+            {"val1":0}
+        ]
+    })
     const pdfBuffer = await htmlToPdfBuffer(htmlStr)
 
 
