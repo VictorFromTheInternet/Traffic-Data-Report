@@ -11,6 +11,23 @@ const __dirname = dirname(__filename);
 // console.log(templatesFolderPath)
 nunjucks.configure('./pdf_templates', { autoescape: true });
 
+
+export async function getMappedPoints(data){
+
+    // call to db here
+
+    // calculations / averages
+
+    // get css data
+    const cssPath = path.join(__dirname, '..', 'pdf_templates', 'styles.css') 
+    const cssStr = await fs.readFile(cssPath, 'utf-8')
+
+    // create pdf/html str        
+    const renderedStr = await nunjucks.render('mappedPoints.html', {"styles": `<style>${cssStr}</style>`, "data":data });
+    // console.log(renderedStr)
+    return renderedStr
+}
+
 export async function getWeeklyPdf(data){
 
     // call to db here
@@ -23,7 +40,7 @@ export async function getWeeklyPdf(data){
 
     // create pdf/html str        
     const renderedStr = await nunjucks.render('weeklyTraffic.html', {"styles": `<style>${cssStr}</style>`, "data":data });
-    console.log(renderedStr)
+    // console.log(renderedStr)
     return renderedStr
 }
 

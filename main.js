@@ -1,6 +1,7 @@
 import dotenv from 'dotenv'
 dotenv.config()
-import {getWeeklyPdf, htmlToPdfBuffer, createLocalPdf} from './util/templatePdf.js'
+import {getWeeklyPdf, htmlToPdfBuffer, getMappedPoints, createLocalPdf} from './util/templatePdf.js'
+import getSnappedPoints from './util/googleMap.js'
 import sendEmail from './util/email.js'
 import fs from 'fs/promises'
 
@@ -21,7 +22,7 @@ async function snapPointsToRoads(points){
             const response = await fetch(`${baseUrl}?interpolate=true&path=${path}&key=${process.env.gapi_key}`)
 
             const data = await response.json()
-            console.log(data)
+            // console.log(data)
 
             // snappedPoints = [...snappedPoints, ...data.something.map]
         }catch(err){
@@ -89,7 +90,7 @@ async function getCurrentTrafficData(snappedPoints){
 async function main(){
     
     // Create Lat/Lon Points
-    const center = { lat: 33.998, lng: -94.966 }; // example downtown coords, +/- 0.01 lat/lng gives you ~1.1 km in each direction.
+    const center = { lat: 33.1568, lng: -94.9683 }; // example downtown coords, +/- 0.01 lat/lng gives you ~1.1 km in each direction.
     const delta = 0.01 ;
     const bounds = {
         north: center.lat + delta,
@@ -110,7 +111,12 @@ async function main(){
     }
     
     // snap to roads
-    //const snappedPoints = await snapPointsToRoads(points)
+    const snappedPoints = await snapPointsToRoads(points)
+    console.log(snappedPoints)
+    console.log(snappedPoints.length)
+
+    // get static map img
+    const map = await getSnappedPoints(snappedPoints)
 
     // collect current data from points
 
@@ -119,13 +125,19 @@ async function main(){
 
 
     // create a pdf
-    const htmlStr = await getWeeklyPdf({ 
-        lat:"10", 
-        lon:"20",
-        table:[
-            {"val1":0}
-        ]
-    })
+    // const htmlStr = await getWeeklyPdf({ 
+    //     lat:"10", 
+    //     lon:"20",
+    //     table:[
+    //         {"val1":0}
+    //     ]
+    // })
+    const htmlStr = await getMappedPoints({
+        center: center,
+        bounds: bounds,        
+        map: map
+
+    }) 
     const pdfBuffer = await htmlToPdfBuffer(htmlStr)
 
 

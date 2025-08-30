@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <!-- <link rel="stylesheet" href="./styles.css" > -->
+    {{ styles | safe }}
+
+    
+    
+</head>
+<body>    
+    <h1>Mapped Points (lat/lon)</h1>
+    <p>Center: {{data.center.lat}} {{data.center.lon}}</p>
+    <p>North Bound: {{data.bounds.north}}</p>
+    <p>South Bound: {{data.bounds.south}} </p>
+    <p>East Bound: {{data.bounds.east}} </p>
+    <p>West Bound: {{data.bounds.west}} </p>
+
+    <div>
+        <img src="{{ data.map }}" alt="">
+    </div>
+    
+</body>
+</html>
