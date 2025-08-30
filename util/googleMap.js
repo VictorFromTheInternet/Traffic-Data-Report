@@ -5,10 +5,11 @@ export async function getSnappedPoints(center,snappedPoints){
     try{        
         const centerStr = `${center.lat},${center.lon}`
         const path = multiplePaths(snappedPoints)
-        const zoom = 14
+        const markers = `&markers=color:red|label:center|${centerStr}`
+        const zoom = 15
         const size = 800
         // console.log(path)
-        const url = `https://maps.googleapis.com/maps/api/staticmap?center=${centerStr}&zoom=${zoom}&size=${size}x${size}&key=${process.env.gapi_key}${path}`
+        const url = `https://maps.googleapis.com/maps/api/staticmap?center=${centerStr}&zoom=${zoom}&size=${size}x${size}&key=${process.env.gapi_key}${path}${markers}`
         console.log(url)
         return url
     }
@@ -21,7 +22,7 @@ export async function getSnappedPoints(center,snappedPoints){
 //
 // Snap to roads (batch loop)
 //
-export async function snapPointsToRoads(points){
+export async function snapPointsToRoads(points, interpolate){
 
     const batchSize = 100; // max amount of points per google api req
     let snappedPoints = [];
@@ -31,8 +32,9 @@ export async function snapPointsToRoads(points){
         const path = batch.map(elm => `${elm.lat},${elm.lon}`).join('|') // query param for path
 
         try{
+            const interpolateStr = (interpolate) ? '&interpolate=true' : ''
             const baseUrl = `https://roads.googleapis.com/v1/snapToRoads`
-            const response = await fetch(`${baseUrl}?interpolate=true&path=${path}&key=${process.env.gapi_key}`)
+            const response = await fetch(`${baseUrl}?path=${path}&key=${process.env.gapi_key}${interpolateStr}`)
 
             const data = await response.json()
                         
@@ -43,8 +45,8 @@ export async function snapPointsToRoads(points){
             console.error(`Could not snap points to roads: ${err}`)
         }
     }    
-
-    return snappedPoints
+    
+    return downsamplePath(snappedPoints)
 
 }
 //snapPointsToRoads(points)
@@ -66,8 +68,8 @@ function multiplePaths(snappedPoints){
         let batchSize = 50
         for(let i=0; i<snappedPoints.length/50; i++){
             let start = i*batchSize
-            let downsampledBatch = downsamplePath(snappedPoints.slice(start, start+batchSize))
-            let temp = downsampledBatch.map(elm => `${elm.location.latitude},${elm.location.longitude}`).join('|')
+            // let downsampledBatch = downsamplePath(snappedPoints.slice(start, start+batchSize))
+            let temp = snappedPoints.slice(start, start+batchSize).map(elm => `${elm.location.latitude},${elm.location.longitude}`).join('|')
             if(temp)
                 queryStr += `&path=color:0x0000FF|weight:5|${temp}`
         }
