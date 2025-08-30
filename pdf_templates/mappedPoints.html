@@ -26,6 +26,7 @@
     <table class="table">
         <thead>
             <tr>
+                <th>Index</th>
                 <th>placeId</th>
                 <th>Lat</th>
                 <th>Lon</th>
@@ -33,6 +34,7 @@
         </thead>
         {% for row in data.snappedPoints %}
             <tr>
+                <td>{{ loop.index0 }}</td>
                 <td>{{ row.placeId }}</td>
                 <td>{{ row.location.latitude }}</td>
                 <td>{{ row.location.longitude }}</td>

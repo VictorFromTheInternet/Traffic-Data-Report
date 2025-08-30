@@ -4,10 +4,11 @@
 export async function getSnappedPoints(center,snappedPoints){
     try{        
         const centerStr = `${center.lat},${center.lon}`
-        const path = snappedPoints.map(elm => `${elm.location.latitude},${elm.location.longitude}`).join('|')
-        const zoom = 16
+        const path = multiplePaths(snappedPoints)
+        const zoom = 14
+        const size = 800
         // console.log(path)
-        const url = `https://maps.googleapis.com/maps/api/staticmap?center=${centerStr}&zoom=${zoom}&size=800x800&key=${process.env.gapi_key}&path=color:0x0000FF|weight:5|${path}`
+        const url = `https://maps.googleapis.com/maps/api/staticmap?center=${centerStr}&zoom=${zoom}&size=${size}x${size}&key=${process.env.gapi_key}${path}`
         console.log(url)
         return url
     }
@@ -43,7 +44,7 @@ export async function snapPointsToRoads(points){
         }
     }    
 
-    return snappedPoints.slice(0,50)
+    return snappedPoints
 
 }
 //snapPointsToRoads(points)
@@ -53,14 +54,27 @@ export async function snapPointsToRoads(points){
 // down sample road path points (every nth)
 //
 function downsamplePath(points){
-
+    return points.filter((elm, ind) => !(ind % 3 === 0))
 }
 
 //
 // multiple path points (every nth)
 //
-function multiplePaths(points){
-
+function multiplePaths(snappedPoints){
+    try{
+        let queryStr = ''
+        let batchSize = 50
+        for(let i=0; i<snappedPoints.length/50; i++){
+            let start = i*batchSize
+            let downsampledBatch = downsamplePath(snappedPoints.slice(start, start+batchSize))
+            let temp = downsampledBatch.map(elm => `${elm.location.latitude},${elm.location.longitude}`).join('|')
+            if(temp)
+                queryStr += `&path=color:0x0000FF|weight:5|${temp}`
+        }
+        return queryStr
+    }catch(err){
+        console.error(`Could not create multiple paths for map: ${err}`)
+    }    
 }
 
 
