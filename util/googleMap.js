@@ -12,7 +12,7 @@ export async function getSnappedPoints(center,snappedPoints){
         // console.log(path)
         // const url = `https://maps.googleapis.com/maps/api/staticmap?center=${centerStr}&zoom=${zoom}&size=${size}x${size}&key=${process.env.gapi_key}${path}${markers}`
         const url = `https://maps.googleapis.com/maps/api/staticmap?center=${centerStr}&zoom=${zoom}&size=${size}x${size}&key=${process.env.gapi_key}${markers}`
-        console.log(url)
+        // console.log(url)
         return url
     }
     catch(err){
@@ -103,48 +103,149 @@ function multipleMarkers(snappedPoints){
 
 
 //
-// Collect Data
+// Collect Data (route)
 //
 export async function getCurrentTrafficData(snappedPoints){
-    const baseUrl = "https://routes.googleapis.com/directions/v2:computeRoutes" 
-    const response = await fetch(`${baseUrl}?key=${process.env.gapi_key}`, {
-        headers: {
-            accept: "*/*",
-            "accept-language": "en-US,en;q=0.9",
-            "content-type": "application/json",
-            "X-Goog-FieldMask":"*",
-        },
-        method: "POST",
-        body: JSON.stringify({
-                origin: {
-                    vehicleStopover: false,
-                    sideOfRoad: false,
-                    address: "Mount Pleasant, TX, USA",
-                },
-                destination: {
-                    vehicleStopover: false,
-                    sideOfRoad: false,
-                    address: "Mount Pleasant, TX, USA",
-                },
-                travelMode: "drive",
-                routingPreference: "traffic_aware",
-                polylineQuality: "high_quality",
-                computeAlternativeRoutes: true,
-                routeModifiers: {
-                    avoidTolls: false,
-                    avoidHighways: false,
-                    avoidFerries: false,
-                    avoidIndoor: false,
-                },
-            }),
-    });
-    // console.log(response)
 
-    const data = await response.json()
-    console.log(data)
+    try{
+        let currData = []
+
+        for(let i=0; i<10; i+=2){
+            let START_LAT = snappedPoints[i].location.latitude
+            let START_LON = snappedPoints[i].longitude.latitude
+            let END_LAT = snappedPoints[i+1].location.latitude
+            let END_LON = snappedPoints[i+1].location.latitude
+
+            const baseUrl = "https://routes.googleapis.com/directions/v2:computeRoutes" 
+            const response = await fetch(`${baseUrl}?key=${process.env.gapi_key}`, {
+                headers: {
+                    accept: "*/*",
+                    "accept-language": "en-US,en;q=0.9",
+                    "content-type": "application/json",
+                    "X-Goog-FieldMask":"*",
+                },
+                method: "POST",
+                body: JSON.stringify({
+                        origin: {
+                            vehicleStopover: false,
+                            sideOfRoad: false,
+                            // address: "Mount Pleasant, TX, USA",
+                            location:{
+                                latitude: START_LAT,
+                                longitude: START_LON
+                            }
+                        },
+                        destination: {
+                            vehicleStopover: false,
+                            sideOfRoad: false,
+                            // address: "Mount Pleasant, TX, USA",
+                            location:{
+                                latitude: END_LAT,
+                                longitude: END_LON
+                            }
+                        },
+                        travelMode: "drive",
+                        routingPreference: "traffic_aware",
+                        polylineQuality: "high_quality",
+                        computeAlternativeRoutes: true,
+                        routeModifiers: {
+                            avoidTolls: false,
+                            avoidHighways: false,
+                            avoidFerries: false,
+                            avoidIndoor: false,
+                        },
+                    }),
+            });            
+
+            const data = await response.json()            
+
+            currData.push(data)
+        }        
+
+        return currData
+    }catch(err){
+        console.error(err)
+    }    
 
 }
 // getCurrentTrafficData()
 
+
+//
+// collect data (matrix)
+//
+export async function getCurrentTrafficDataMatrix(snappedPoints){
+    try{
+
+
+        const baseUrl = "https://routes.googleapis.com/distanceMatrix/v2:computeRouteMatrix" 
+            const response = await fetch(`${baseUrl}?key=${process.env.gapi_key}`, {
+                headers: {
+                    accept: "*/*",
+                    "accept-language": "en-US,en;q=0.9",
+                    "content-type": "application/json",
+                    "X-Goog-FieldMask":"*",
+                },
+                method: "POST",
+                body: JSON.stringify({	
+                    "origins": [
+                        {
+                        "waypoint": {
+                            "location": {
+                            "latLng": {
+                                "latitude": 37.420761,
+                                "longitude": -122.081356
+                            }
+                            }
+                        },
+                        "routeModifiers": { "avoid_ferries": true}
+                        },
+                        {
+                        "waypoint": {
+                            "location": {
+                            "latLng": {
+                                "latitude": 37.403184,
+                                "longitude": -122.097371
+                            }
+                            }
+                        },
+                        "routeModifiers": { "avoid_ferries": true}
+                        }
+                    ],
+                    "destinations": [
+                        {
+                        "waypoint": {
+                            "location": {
+                            "latLng": {
+                                "latitude": 37.420999,
+                                "longitude": -122.086894
+                            }
+                            }
+                        }
+                        },
+                        {
+                        "waypoint": {
+                            "location": {
+                            "latLng": {
+                                "latitude": 37.383047,
+                                "longitude": -122.044651
+                            }
+                            }
+                        }
+                        }
+                    ],
+                    "travelMode": "DRIVE",
+                    "routingPreference": "TRAFFIC_AWARE"
+                }),
+            });            
+
+            const data = await response.json()   
+            
+            return data
+
+    }catch(err){
+        console.error(err)
+    }
+}
 
 export default getSnappedPoints

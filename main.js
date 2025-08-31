@@ -1,7 +1,7 @@
 import dotenv from 'dotenv'
 dotenv.config()
 import {getWeeklyPdf, htmlToPdfBuffer, getMappedPointsPdf, createLocalPdf} from './util/templatePdf.js'
-import {getSnappedPoints, snapPointsToRoads, getCurrentTrafficData} from './util/googleMap.js'
+import {getSnappedPoints, snapPointsToRoads, getCurrentTrafficData, getCurrentTrafficDataMatrix} from './util/googleMap.js'
 import createLatLonPoints from './util/createLatLonPoints.js'
 import sendEmail from './util/email.js'
 import fs from 'fs/promises'
@@ -26,6 +26,28 @@ async function readTestData(){
         console.log('finished writing to testdata files')
 
         return {points, bounds, snappedPoints}
+    }catch(err){
+        console.error(err)
+    }
+}
+
+async function readCurrentData(){
+    try{
+
+        const currentData = JSON.parse(await fs.readFile('./testdata/currentData.json', 'utf-8'))
+        
+        return currentData
+    }catch(err){
+        console.error(err)
+    }
+}
+
+async function writeCurrentData(currentData){
+    try{
+
+        await fs.writeFile('./testdata/currentData.json', JSON.stringify(currentData))
+        console.log('finished writing current data')
+
     }catch(err){
         console.error(err)
     }
@@ -59,6 +81,11 @@ async function main(){
     const map = await getSnappedPoints(center, snappedPoints)
 
     // collect current data from points
+    // const currentData = await getCurrentTrafficData(snappedPoints)
+    // await writeCurrentData(currentData)
+    // const currentData = await getCurrentTrafficDataMatrix(snappedPoints)
+    // await writeCurrentData({data: currentData})
+    // console.log(currentData)
 
 
     // visualize
