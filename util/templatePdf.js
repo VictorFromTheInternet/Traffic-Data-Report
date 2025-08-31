@@ -51,7 +51,21 @@ export async function htmlToPdfBuffer(htmlStr){
     await page.setContent(htmlStr, { waitUntil: 'networkidle0' });
     const pdfBuffer = await page.pdf({ 
         format: 'A4',
-        printBackground: true 
+        height: '11in',
+        width: '8.5in',
+        printBackground: true,
+        displayHeaderFooter: true,
+        margin: {top: '.75in', bottom: '.75in', left: '.25in', right: '.25in'},
+        headerTemplate: `
+            <div style="background-color: red;width:100%;text-align:center;font-size:10px;padding:5px 0;">
+                <p>VictorFromTheInternet</p>
+            </div>
+        `,
+        footerTemplate: `
+            <div style="background-color: red;width:100%;text-align:center;font-size:10px;padding:5px 0;">
+                <p>Page <span class="pageNumber"></span> of <span class="totalPages"></span></p>
+            </div>
+        `
     });
     await browser.close();
 

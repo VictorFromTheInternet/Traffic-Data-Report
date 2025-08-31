@@ -22,8 +22,8 @@
 
 /* layout and containers */
 @page {
-    size: Letter portrait;
-    margin: .5in;
+    size: 8.5in 11in portrait;
+    /* margin: .25in; */
 }
 
 body {

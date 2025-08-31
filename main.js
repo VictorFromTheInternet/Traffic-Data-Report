@@ -56,7 +56,7 @@ async function main(){
     console.log(bounds)
 
     // get static map img
-    // const map = await getSnappedPoints(center, snappedPoints)
+    const map = await getSnappedPoints(center, snappedPoints)
 
     // collect current data from points
 
@@ -72,17 +72,17 @@ async function main(){
     //         {"val1":0}
     //     ]
     // })
-    // const htmlStr = await getMappedPointsPdf({
-    //     center: center,
-    //     bounds: bounds,        
-    //     map: map,
-    //     snappedPoints: snappedPoints
-    // }) 
-    // const pdfBuffer = await htmlToPdfBuffer(htmlStr)
+    const htmlStr = await getMappedPointsPdf({
+        center: center,
+        bounds: bounds,        
+        map: map,
+        snappedPoints: snappedPoints
+    }) 
+    const pdfBuffer = await htmlToPdfBuffer(htmlStr)
 
 
     // test, create local copy    
-    // createLocalPdf(pdfBuffer, './testpdfs/output.pdf')
+    createLocalPdf(pdfBuffer, './testpdfs/output.pdf')
 
 
     // email to yourself
