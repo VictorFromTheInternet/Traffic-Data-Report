@@ -4,12 +4,14 @@
 export async function getSnappedPoints(center,snappedPoints){
     try{        
         const centerStr = `${center.lat},${center.lon}`
-        const path = multiplePaths(snappedPoints)
-        const markers = `&markers=color:red|label:center|${centerStr}`
+        // const path = multiplePaths(snappedPoints)
+        const multipleMarkersStr = multipleMarkers(snappedPoints)
+        const markers = `&markers=color:red|label:center|${centerStr}${multipleMarkersStr}`
         const zoom = 15
         const size = 800
         // console.log(path)
-        const url = `https://maps.googleapis.com/maps/api/staticmap?center=${centerStr}&zoom=${zoom}&size=${size}x${size}&key=${process.env.gapi_key}${path}${markers}`
+        // const url = `https://maps.googleapis.com/maps/api/staticmap?center=${centerStr}&zoom=${zoom}&size=${size}x${size}&key=${process.env.gapi_key}${path}${markers}`
+        const url = `https://maps.googleapis.com/maps/api/staticmap?center=${centerStr}&zoom=${zoom}&size=${size}x${size}&key=${process.env.gapi_key}${markers}`
         console.log(url)
         return url
     }
@@ -79,7 +81,25 @@ function multiplePaths(snappedPoints){
     }    
 }
 
-
+//
+//  create markers
+//
+function multipleMarkers(snappedPoints){
+    try{
+        let queryStr = ''
+        let batchSize = 50
+        for(let i=0; i<snappedPoints.length/50; i++){
+            let start = i*batchSize
+            // let downsampledBatch = downsamplePath(snappedPoints.slice(start, start+batchSize))
+            let temp = snappedPoints.slice(start, start+batchSize).map(elm => `${elm.location.latitude},${elm.location.longitude}`).join('|')
+            if(temp)
+                queryStr += `&markers=color:blue|label:center|${temp}`                
+        }
+        return queryStr
+    }catch(err){
+        console.error(`Could not create multiple paths for map: ${err}`)
+    }    
+}
 
 
 //
