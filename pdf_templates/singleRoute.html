@@ -12,13 +12,12 @@
     
 </head>
 <body>    
-    <h3>Mapped Points (lat/lon)</h3>
-    <p>Center: {{data.center.lat}} {{data.center.lon}}</p>
-    <p>North Bound: {{data.bounds.north}}</p>
-    <p>South Bound: {{data.bounds.south}} </p>
-    <p>East Bound: {{data.bounds.east}} </p>
-    <p>West Bound: {{data.bounds.west}} </p>
+    <h3>Mapped Points (lat/lon): </h3>
+    <p>Center: {{data.center.lat}} , {{data.center.lon}}</p>
+    <p>Start: {{data.start.lat}} , {{data.start.lon}}</p>
+    <p>End: {{data.end.lat}} , {{data.end.lon}}</p>    
 
+    <h3>Route: </h3>
     <div>
         <img src="{{ data.map }}" alt="">
     </div>

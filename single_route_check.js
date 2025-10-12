@@ -1,7 +1,7 @@
 import dotenv from 'dotenv'
 dotenv.config()
-import {getWeeklyPdf, htmlToPdfBuffer, getMappedPointsPdf, createLocalPdf} from './util/templatePdf.js'
-import {getSnappedPoints, getStaticMap, snapPointsToRoads, getCurrentTrafficData, getCurrentTrafficDataMatrix} from './util/googleMap.js'
+import {getWeeklyPdf, htmlToPdfBuffer, getPdfTemplateStr, createLocalPdf} from './util/templatePdf.js'
+import {getSnappedPoints, getStaticMap, snapPointsToRoads, getCurrentTrafficData, getCurrentRouteData, getCurrentTrafficDataMatrix} from './util/googleMap.js'
 import createLatLonPoints from './util/createLatLonPoints.js'
 import sendEmail from './util/email.js'
 import fs from 'fs/promises'
@@ -58,53 +58,28 @@ async function writeCurrentData(currentData){
 //
 async function main(){
     
-    // create points and bounds
-    const center = { lat: 33.1568, lon: -94.9683 } // example downtown coords
+    // create points and bounds 5th ave NY                      
     const delta = 0.01 // +/- 0.01 lat/lng gives you ~1.1 km in each direction, defines the bounds
     const step = 0.002 // offset for each point
-    // const {points,bounds} = createLatLonPoints(center, delta, step)
-        
+    const start = { lat: 40.73124319217295, lon: -73.99711744955137 }
+    const end = { lat: 40.803228812387765, lon: -73.9446265187239 }
+    const center = { lat: (start.lat + end.lat)/2 , lon: (start.lon + end.lon )/2 } // example downtown coords
     
-    // snap to roads
-    // const snappedPoints = await snapPointsToRoads(points, true) // points, interpolate    
 
+    // get static map img (center, start, end, zoom, size)
+    const map = await getStaticMap(center, start, end, 13, 800)
+    
+    // get route data
+    const routeData = await getCurrentRouteData(start, end)
+    console.log(routeData)
 
-    // write test data to files
-    // await writeTestData(points, bounds, snappedPoints)
-
-    // read test data from files
-    //const {points, bounds, snappedPoints} = await readTestData()
-    //console.log(typeof snappedPoints)
-    //console.log(bounds)
-
-    // get static map img
-    const map = await getStaticMap(center)
-
-    // collect current data from points
-    // const currentData = await getCurrentTrafficData(snappedPoints)
-    // await writeCurrentData(currentData)
-    // const currentData = await getCurrentTrafficDataMatrix(snappedPoints)
-    // await writeCurrentData({data: currentData})
-    // console.log(currentData)
-
-
-    // visualize
-
-
-    // create a pdf
-    // const htmlStr = await getWeeklyPdf({ 
-    //     lat:"10", 
-    //     lon:"20",
-    //     table:[
-    //         {"val1":0}
-    //     ]
-    // })
-    const htmlStr = await getMappedPointsPdf({
-        center: center,
-        //bounds: bounds,        
-        map: map,
-        //snappedPoints: snappedPoints
-    }) 
+    // create a pdf    
+    const htmlStr = await getPdfTemplateStr({
+        center: center,        
+        map: map,        
+        start: start,
+        end: end
+    }, 'singleRoute') 
     const pdfBuffer = await htmlToPdfBuffer(htmlStr)
 
 

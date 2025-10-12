@@ -12,7 +12,7 @@ const __dirname = dirname(__filename);
 nunjucks.configure('./pdf_templates', { autoescape: true });
 
 
-export async function getMappedPointsPdf(data){
+export async function getPdfTemplateStr(data, templateName){
 
     // call to db here
 
@@ -23,7 +23,7 @@ export async function getMappedPointsPdf(data){
     const cssStr = await fs.readFile(cssPath, 'utf-8')
 
     // create pdf/html str        
-    const renderedStr = await nunjucks.render('mappedPoints.html', {"styles": `<style>${cssStr}</style>`, "data":data });
+    const renderedStr = await nunjucks.render(`${templateName}.html`, {"styles": `<style>${cssStr}</style>`, "data":data });
     // console.log(renderedStr)
     return renderedStr
 }

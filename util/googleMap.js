@@ -1,5 +1,6 @@
+
 //
-//  get map url
+//  get map url - snapped points
 //
 export async function getSnappedPoints(center,snappedPoints){
     try{        
@@ -13,7 +14,34 @@ export async function getSnappedPoints(center,snappedPoints){
         // const url = `https://maps.googleapis.com/maps/api/staticmap?center=${centerStr}&zoom=${zoom}&size=${size}x${size}&key=${process.env.gapi_key}${path}${markers}`
         const url = `https://maps.googleapis.com/maps/api/staticmap?center=${centerStr}&zoom=${zoom}&size=${size}x${size}&key=${process.env.gapi_key}${markers}`
         // console.log(url)
-        return url
+
+        const response = await fetch(url)
+        const bufferData = response.arrayBuffer()
+        const base64 = bufferData.toString('base64')        
+
+        return `data:image/png;base64,${base64}`
+    }
+    catch(err){
+        console.error(`Could not create static map url: ${err}`)
+    }    
+}
+
+//
+//  get map img data url (path / route)
+//
+export async function getStaticMap(center,pathStart, pathEnd, zoom, size){
+    try{        
+        const centerStr = `${center.lat},${center.lon}`                
+        const pathStr = `${pathStart.lat},${pathStart.lon}|${pathEnd.lat},${pathEnd.lon}`
+        const url = `https://maps.googleapis.com/maps/api/staticmap?center=${centerStr}&path=${pathStr}&zoom=${zoom}&size=${size}x${size}&key=${process.env.gapi_key}`
+        // console.log(url)
+
+        const response = await fetch(url)
+        const bufferData = await response.arrayBuffer()
+        const base64 = Buffer.from(bufferData).toString('base64')        
+        
+
+        return `data:image/png;base64,${base64}`
     }
     catch(err){
         console.error(`Could not create static map url: ${err}`)
@@ -168,7 +196,69 @@ export async function getCurrentTrafficData(snappedPoints){
     }    
 
 }
-// getCurrentTrafficData()
+
+export async function getCurrentRouteData(start, end){
+
+    try{                   
+
+        const baseUrl = "https://routes.googleapis.com/directions/v2:computeRoutes" 
+        const response = await fetch(`${baseUrl}?key=${process.env.gapi_key}`, {
+            headers: {
+                accept: "*/*",
+                "accept-language": "en-US,en;q=0.9",
+                "content-type": "application/json",
+                "X-Goog-FieldMask":"*",
+            },
+            method: "POST",
+            body: JSON.stringify({
+                    origin: {
+                        vehicleStopover: false,
+                        sideOfRoad: false,
+                        // address: "Mount Pleasant, TX, USA",
+                        location:{
+                            latLng:{
+                                latitude: start.lat,
+                                longitude: start.lon
+                            }                            
+                        }
+                    },
+                    destination: {
+                        vehicleStopover: false,
+                        sideOfRoad: false,
+                        // address: "Mount Pleasant, TX, USA",
+                        location:{
+                            latLng:{
+                                latitude: end.lat,
+                                longitude: end.lon
+                            }                            
+                        }
+                    },
+                    travelMode: "drive",
+                    routingPreference: "traffic_aware",
+                    polylineQuality: "high_quality",
+                    computeAlternativeRoutes: true,
+                    routeModifiers: {
+                        avoidTolls: false,
+                        avoidHighways: false,
+                        avoidFerries: false,
+                        avoidIndoor: false,
+                    },
+                }),
+        });            
+
+        if(response.ok){
+            const data = await response.json()                           
+            return data
+        }else{
+            console.error( await response.text())    
+        }
+        
+        
+    }catch(err){
+        console.error(err)
+    }    
+
+}
 
 
 //
