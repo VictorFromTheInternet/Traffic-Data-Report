@@ -51,6 +51,7 @@ export async function htmlToPdfBuffer(htmlStr){
     await page.setContent(htmlStr, { waitUntil: 'networkidle0' });
     const pdfBuffer = await page.pdf({ 
         format: 'A4',
+        landscape: false,
         height: '11in',
         width: '8.5in',
         printBackground: true,

@@ -6,7 +6,7 @@
     --table-header-primary: rgb(25, 25, 25);
     --table-header-secondary: rgba(150, 150, 150, 1);
     --table-row-light: rgba(255, 255, 255, 1);
-    --table-row-dark: rgba(200, 200, 200, 1);
+    --table-row-dark: rgba(230, 230, 230, 1);
 
     --table-light-border: rgba(114, 114, 114, .75);
     --table-dark-border: rgba(25, 25, 25, 1);
@@ -139,18 +139,18 @@ h5 {
 
 /* table styling */
 .table-container {
-    padding: .5rem;
+    padding: .5rem 0;
     width: calc(100% - 1rem);
 }
 
 table {
-    page-break-inside: avoid;
+    /* break-inside: avoid; */
     font-family: var(--font-family-sans);
 }
 
 tr {
-    page-break-inside: avoid;
-    page-break-after: auto;
+    break-inside: avoid;
+    break-after: auto;
 }
 
 .table {
@@ -165,14 +165,18 @@ tr {
 
 }
 
-.table tr:nth-child(even) {
+.table tbody tr:nth-child(even) {
     background-color: var(--table-row-light);
 }
 
-.table tr:nth-child(odd) {
+.table tbody tr:nth-child(odd) {
     background-color: var(--table-row-dark);
 }
 
+.table thead tr{
+    background-color: var(--table-header-primary);
+    color: white;
+}
 .table thead tr[class~="table-header-primary"] {
     background-color: var(--table-header-primary);
     /* background-color: rgba(50,50,50,1); */
@@ -201,4 +205,12 @@ tr {
 .table>tbody:not(:last-child),
 .table>tfoot:not(:last-child) {
     border-bottom: 1px solid var(--table-light-border);
+}
+
+
+.page-break-before{
+    break-before: always;
+}
+.page-break-after{
+    break-before: always;
 }

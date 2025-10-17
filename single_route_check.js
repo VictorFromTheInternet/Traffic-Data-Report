@@ -2,16 +2,15 @@ import dotenv from 'dotenv'
 dotenv.config()
 import {getWeeklyPdf, htmlToPdfBuffer, getPdfTemplateStr, createLocalPdf} from './util/templatePdf.js'
 import {getSnappedPoints, getStaticMap, snapPointsToRoads, getCurrentTrafficData, getCurrentRouteData, getCurrentTrafficDataMatrix} from './util/googleMap.js'
+import UploadFile from './util/awsS3.js'
 import createLatLonPoints from './util/createLatLonPoints.js'
 import sendEmail from './util/email.js'
 import fs from 'fs/promises'
 
 
-async function writeTestData(points, bounds, snappedPoints){
+async function writeTestData(data){
     try{
-        await fs.writeFile('./testdata/points.json', JSON.stringify(points))
-        await fs.writeFile('./testdata/bounds.json', JSON.stringify(bounds))
-        await fs.writeFile('./testdata/snappedPoints.json', JSON.stringify(snappedPoints))
+        await fs.writeFile('./testdata/routeData.json', JSON.stringify(data))        
         console.log('finished writing to testdata files')
     }catch(err){
         console.error(err)
@@ -20,12 +19,10 @@ async function writeTestData(points, bounds, snappedPoints){
 
 async function readTestData(){
     try{
-        const points = JSON.parse(await fs.readFile('./testdata/points.json', 'utf-8'))
-        const bounds = JSON.parse(await fs.readFile('./testdata/bounds.json', 'utf-8'))
-        const snappedPoints = JSON.parse(await fs.readFile('./testdata/snappedPoints.json', 'utf-8')        )
-        console.log('finished writing to testdata files')
+        const routeData = JSON.parse(await fs.readFile('./testdata/routeData.json', 'utf-8'))        
+        console.log('finished reading testdata files')
 
-        return {points, bounds, snappedPoints}
+        return routeData
     }catch(err){
         console.error(err)
     }
@@ -53,6 +50,32 @@ async function writeCurrentData(currentData){
     }
 }
 
+function getCstTimestamp(date = new Date(), timeZone = 'America/Chicago') {
+    const options = {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true, // Using 12-hour format
+        timeZone: timeZone // CST timezone
+    };    
+    const parts = new Intl.DateTimeFormat('en-US', options).formatToParts(date);
+    //console.log(parts)
+
+    const month = parts.find(p => p.type === 'month').value;
+    const day = parts.find(p => p.type === 'day').value;
+    const year = parts.find(p => p.type === 'year').value;
+    const min = parts.find(p => p.type === 'minute').value;
+    const hr = parts.find(p => p.type === 'hour').value;
+    const sec = parts.find(p => p.type === 'second').value;
+    const dayPeriod = parts.find(p => p.type === 'dayPeriod').value;
+    return `${month}-${day}-${year} ${hr}:${min}:${sec} ${dayPeriod}`;
+}
+//console.log(getCstTimestamp())
+
+
 //
 // Driver 
 //
@@ -70,21 +93,31 @@ async function main(){
     const map = await getStaticMap(center, start, end, 13, 800)
     
     // get route data
-    const routeData = await getCurrentRouteData(start, end)
-    console.log(routeData)
+    //const routeData = await getCurrentRouteData(start, end)
+    //await writeTestData(routeData)
+    const routeData = await readTestData()    
+
 
     // create a pdf    
     const htmlStr = await getPdfTemplateStr({
         center: center,        
         map: map,        
         start: start,
-        end: end
+        end: end,
+        routeData: routeData
     }, 'singleRoute') 
     const pdfBuffer = await htmlToPdfBuffer(htmlStr)
 
 
     // test, create local copy    
     createLocalPdf(pdfBuffer, './testpdfs/output.pdf')
+
+
+    // upload to s3    
+    const cstTimestamp = getCstTimestamp()
+    const fileName = `test/${cstTimestamp}.pdf`
+    console.log(fileName)
+    UploadFile(pdfBuffer, fileName)
 
 
     // email to yourself

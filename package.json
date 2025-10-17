@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "client-s3": "github:aws-sdk/client-s3",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "nodemailer": "^7.0.5",

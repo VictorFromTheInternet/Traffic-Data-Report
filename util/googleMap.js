@@ -31,9 +31,10 @@ export async function getSnappedPoints(center,snappedPoints){
 //
 export async function getStaticMap(center,pathStart, pathEnd, zoom, size){
     try{        
-        const centerStr = `${center.lat},${center.lon}`                
-        const pathStr = `${pathStart.lat},${pathStart.lon}|${pathEnd.lat},${pathEnd.lon}`
-        const url = `https://maps.googleapis.com/maps/api/staticmap?center=${centerStr}&path=${pathStr}&zoom=${zoom}&size=${size}x${size}&key=${process.env.gapi_key}`
+        const centerStr = `center=${center.lat},${center.lon}`                
+        const pathStr = `&path=${pathStart.lat},${pathStart.lon}|${pathEnd.lat},${pathEnd.lon}`
+        const markersStr = `&markers=color:red|label:A|${pathStart.lat},${pathStart.lon}&markers=color:blue|label:B|${pathEnd.lat},${pathEnd.lon}`
+        const url = `https://maps.googleapis.com/maps/api/staticmap?${centerStr}${pathStr}${markersStr}&zoom=${zoom}&size=${size}x${size}&key=${process.env.gapi_key}`
         // console.log(url)
 
         const response = await fetch(url)

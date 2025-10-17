@@ -17,31 +17,120 @@
     <p>Start: {{data.start.lat}} , {{data.start.lon}}</p>
     <p>End: {{data.end.lat}} , {{data.end.lon}}</p>    
 
-    <h3>Route: </h3>
-    <div>
+    <div class="table-container">
+        <h3>Route Details:</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Detail</th>
+                    <th>Description</th>                
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        Route description
+                    </td>
+                    <td>
+                        {{ data.routeData.routes[0].description }}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        Distance
+                    </td>
+                    <td>
+                        {{ data.routeData.routes[0].localizedValues.distance.text }}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        Duration
+                    </td>
+                    <td>
+                        {{ data.routeData.routes[0].localizedValues.duration.text }}
+                    </td>
+                </tr>
+
+                {% for row in data.routeData.routes[0].warnings %}
+                <tr>
+                    <td>Warning</td>
+                    <td>{{ row }}</td>                
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>    
+
+    <div class="page-break-after">
         <img src="{{ data.map }}" alt="">
     </div>
-    
-    <!--  
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Index</th>
-                <th>placeId</th>
-                <th>Lat</th>
-                <th>Lon</th>
-            </tr>
-        </thead>
-        {% for row in data.snappedPoints %}
-            <tr>
-                <td>{{ loop.index0 }}</td>
-                <td>{{ row.placeId }}</td>
-                <td>{{ row.location.latitude }}</td>
-                <td>{{ row.location.longitude }}</td>
-            </tr>
 
+    <!-- <div class="page-break-before">        
+    </div>     -->
+    <div class="table-container">
+        <h3 >Trip Legs:</h3>
+        {% for row in data.routeData.routes[0].legs %}
+        <table class="table ">
+            <thead>
+                <tr>
+                    <th colspan="2">
+                        Leg: {{loop.index}}
+                    </th>
+                </tr>
+                <tr>
+                    <th>Detail</th>
+                    <th>Description</th>                
+                </tr>
+            </thead>
+            <tbody>                            
+
+                <tr>
+                    <td>Distance (m) </td>
+                    <td>{{ row.distanceMeters }}</td>                
+                </tr>
+
+                <tr>
+                    <td>Start (lat/lon) </td>
+                    <td>{{ row.startLocation.latLng.latitude }} | {{ row.startLocation.latLng.longitude }}</td>                
+                </tr>
+
+                <tr>
+                    <td>End (lat/lon) </td>
+                    <td>{{ row.endLocation.latLng.latitude }} | {{ row.endLocation.latLng.longitude }}</td>                
+                </tr>
+
+                <!-- {% for step in row.steps %}
+                <tr>
+                    <th colspan="2">Step: {{loop.index}}</th>
+                </tr>
+
+                <tr>
+                    <td>
+                        Manuever
+                    </td>
+                    <td>
+                        {{step.navigationInstruction.manuever}}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        Instructions
+                    </td>
+                    <td>
+                        {{step.navigationInstruction.instructions}}
+                    </td>
+                </tr>
+
+                {% endfor %} -->
+            
+            </tbody>
+        </table>
         {% endfor %}
-    </table>
-    -->
+    </div>    
+    
 </body>
 </html>
