@@ -6,7 +6,8 @@ import UploadFile from './util/awsS3.js'
 import createLatLonPoints from './util/createLatLonPoints.js'
 import sendEmail from './util/email.js'
 import fs from 'fs/promises'
-
+import mongoose from 'mongoose'
+import ReportSchema from './models/Reports.js'
 
 async function writeTestData(data){
     try{
@@ -80,6 +81,9 @@ function getCstTimestamp(date = new Date(), timeZone = 'America/Chicago') {
 // Driver 
 //
 async function main(){
+    // connect to mongodb
+    await mongoose.connect(process.env.mongodb_connection)    
+
     
     // create points and bounds 5th ave NY                      
     const delta = 0.01 // +/- 0.01 lat/lng gives you ~1.1 km in each direction, defines the bounds
@@ -115,12 +119,22 @@ async function main(){
 
     // upload to s3    
     const cstTimestamp = getCstTimestamp()
-    const fileName = `test/${cstTimestamp}.pdf`
-    console.log(fileName)
-    UploadFile(pdfBuffer, fileName)
+    const fileName = `test/${cstTimestamp}.pdf`    
+    const s3UploadResults = await UploadFile(pdfBuffer, fileName)
+    console.log(s3UploadResults)
+
+    // create record in mongodb
+    const Report = mongoose.model('Report', ReportSchema)
+    const newReport = Report({
+        link: `https://${process.env.aws_bucket_name}.s3.${process.env.aws_region}.amazonaws.com/${fileName}`
+    })
+    const mongoUploadResults = await newReport.save()
+    console.log(mongoUploadResults)
 
 
     // email to yourself
     //await sendEmail(pdfBuffer)
+
+    await mongoose.disconnect()
 }
 main()

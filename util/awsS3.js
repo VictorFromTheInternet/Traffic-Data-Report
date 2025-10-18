@@ -38,7 +38,7 @@ export async function uploadFile(fileStream, fileName) {
 
   try {
     const data = await s3.send(new PutObjectCommand(uploadParams));
-    console.log("Upload success:", data);
+    // console.log("Upload success:", data);
     return data;
   } catch (err) {
     console.error("Error uploading file:", err);

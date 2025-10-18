@@ -3,6 +3,7 @@
     "client-s3": "github:aws-sdk/client-s3",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
+    "mongoose": "^8.19.1",
     "nodemailer": "^7.0.5",
     "nunjucks": "^3.2.4",
     "path": "^0.12.7",
