@@ -126,7 +126,11 @@ async function main(){
     // create record in mongodb
     const Report = mongoose.model('Report', ReportSchema)
     const newReport = Report({
-        link: `https://${process.env.aws_bucket_name}.s3.${process.env.aws_region}.amazonaws.com/${fileName}`
+        link: `https://${process.env.aws_bucket_name}.s3.${process.env.aws_region}.amazonaws.com/${fileName}`,
+        start: start,
+        stop: end,
+        distance: routeData.routes[0].localizedValues.distance.text,
+        duration: routeData.routes[0].localizedValues.duration.text
     })
     const mongoUploadResults = await newReport.save()
     console.log(mongoUploadResults)
