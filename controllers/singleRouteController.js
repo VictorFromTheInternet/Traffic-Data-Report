@@ -24,8 +24,14 @@ export async function singleRoute(req, res){
     // create points and bounds 5th ave NY                      
     const delta = 0.01 // +/- 0.01 lat/lng gives you ~1.1 km in each direction, defines the bounds
     const step = 0.002 // offset for each point
-    const start = { lat: 40.73124319217295, lon: -73.99711744955137 }
-    const end = { lat: 40.803228812387765, lon: -73.9446265187239 }
+    const start = { 
+        lat: req.body.start.lat || 40.73124319217295, 
+        lon: req.body.start.lon || -73.99711744955137 
+    }
+    const end = { 
+        lat: req.body.end.lat || 40.803228812387765, 
+        lon: req.body.end.lon ||-73.9446265187239 
+    }
     const center = { lat: (start.lat + end.lat)/2 , lon: (start.lon + end.lon )/2 } // example downtown coords
     
 
@@ -77,7 +83,7 @@ export async function singleRoute(req, res){
 
     await mongoose.disconnect()
 
-    res.send({"message":"Hello World!"})
+    res.send({message:"success", uploadResults: mongoUploadResults})
 }
 
 export default singleRoute

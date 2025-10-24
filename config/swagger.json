@@ -7,13 +7,14 @@
   },
   "servers": [
     {
-      "url": "http://localhost:3000/api/",
+      "url": "http://localhost:5000/api/",
       "description": "Development server"
     }
   ],
   "paths": {
-    "api/single-route": {      
+    "/single-route": {      
       "post": {
+        "tags":["Single Route"],
         "summary": "Create a report for current traffic conditions ",
         "description": "Gets the route conditions between two lat/lon points using Google's Route API. Creates a pdf report, uploads it to an AWS S3 bucket. Creates a record in MongoDB with current conditions and a link to the pdf report",
         "requestBody": {
@@ -39,11 +40,18 @@
       "SingleRoute": {
         "type": "object",
         "properties": {
-          "name": {
-            "type": "string"
+          "start": {
+            "type": "object",
+            "properties":{
+                "lat": {"type":"number"},
+                "lon": {"type":"number"}
+            }
           },
-          "description": {
-            "type": "string"
+          "end": {
+            "properties":{
+                "lat": {"type":"number"},
+                "lon": {"type":"number"}
+            }
           }
         },
         "required": ["name"]
