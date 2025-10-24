@@ -7,3 +7,4 @@
 - Separate the single route controller into two functions
     - collect data
     - create report
+- add auth
