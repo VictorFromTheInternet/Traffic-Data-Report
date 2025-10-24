@@ -7,3 +7,6 @@ router.get('/health-check',(req,res)=>{
 
     res.send({"message":"Hello World!"})
 })
+
+
+export default router

@@ -1,5 +1,9 @@
 import express from 'express'
+import dotenv from 'dotenv'
+dotenv.config()
 import singleRoute_Router from './routes/singleRoute.js'
+import docs_router from './routes/docs.js'
+
 
 const app = express()
 const PORT = process.env.PORT
@@ -9,6 +13,7 @@ const PORT = process.env.PORT
 app.use(express.json())
 
 // routes
+app.use('/docs', docs_router);
 app.use('/single-route', singleRoute_Router)
 
 app.listen(PORT, ()=>{
