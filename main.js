@@ -14,7 +14,7 @@ app.use(express.json())
 
 // routes
 app.use('/docs', docs_router);
-app.use('/single-route', singleRoute_Router)
+app.use('/api/single-route', singleRoute_Router)
 
 app.listen(PORT, ()=>{
     console.log(`app listening on port: ${PORT}`)
