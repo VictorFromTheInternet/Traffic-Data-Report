@@ -2,6 +2,8 @@ import dotenv from 'dotenv'
 dotenv.config()
 import {getWeeklyPdf, htmlToPdfBuffer, getPdfTemplateStr, createLocalPdf} from './util/templatePdf.js'
 import {getSnappedPoints, getStaticMap, snapPointsToRoads, getCurrentTrafficData, getCurrentRouteData, getCurrentTrafficDataMatrix} from './util/googleMap.js'
+import {readCurrentData,  writeCurrentData, readTestData, writeTestData} from './util/testData.js'
+import getCstTimestamp from './util/dateFunctions.js'
 import UploadFile from './util/awsS3.js'
 import createLatLonPoints from './util/createLatLonPoints.js'
 import sendEmail from './util/email.js'
@@ -9,72 +11,6 @@ import fs from 'fs/promises'
 import mongoose from 'mongoose'
 import ReportSchema from './models/Reports.js'
 
-async function writeTestData(data){
-    try{
-        await fs.writeFile('./testdata/routeData.json', JSON.stringify(data))        
-        console.log('finished writing to testdata files')
-    }catch(err){
-        console.error(err)
-    }
-}
-
-async function readTestData(){
-    try{
-        const routeData = JSON.parse(await fs.readFile('./testdata/routeData.json', 'utf-8'))        
-        console.log('finished reading testdata files')
-
-        return routeData
-    }catch(err){
-        console.error(err)
-    }
-}
-
-async function readCurrentData(){
-    try{
-
-        const currentData = JSON.parse(await fs.readFile('./testdata/currentData.json', 'utf-8'))
-        
-        return currentData
-    }catch(err){
-        console.error(err)
-    }
-}
-
-async function writeCurrentData(currentData){
-    try{
-
-        await fs.writeFile('./testdata/currentData.json', JSON.stringify(currentData))
-        console.log('finished writing current data')
-
-    }catch(err){
-        console.error(err)
-    }
-}
-
-function getCstTimestamp(date = new Date(), timeZone = 'America/Chicago') {
-    const options = {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: true, // Using 12-hour format
-        timeZone: timeZone // CST timezone
-    };    
-    const parts = new Intl.DateTimeFormat('en-US', options).formatToParts(date);
-    //console.log(parts)
-
-    const month = parts.find(p => p.type === 'month').value;
-    const day = parts.find(p => p.type === 'day').value;
-    const year = parts.find(p => p.type === 'year').value;
-    const min = parts.find(p => p.type === 'minute').value;
-    const hr = parts.find(p => p.type === 'hour').value;
-    const sec = parts.find(p => p.type === 'second').value;
-    const dayPeriod = parts.find(p => p.type === 'dayPeriod').value;
-    return `${month}-${day}-${year} ${hr}:${min}:${sec} ${dayPeriod}`;
-}
-//console.log(getCstTimestamp())
 
 
 //
