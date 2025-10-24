@@ -11,7 +11,19 @@
       "description": "Development server"
     }
   ],
-  "paths": {
+  "paths": {    
+    "/single-route/health-check": {      
+      "get": {
+        "tags":["Single Route"],
+        "summary": "Health Check ",
+        "description": "",       
+        "responses": {
+          "200": {
+            "description": "Health check successful"
+          }
+        }
+      }
+    },
     "/single-route": {      
       "post": {
         "tags":["Single Route"],
